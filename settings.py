@@ -7,3 +7,5 @@ DEST_CHANNEL = -1002843375474
 
 CUSTOM_PREFIX = "IRandomGuy - "
 THUMBNAIL_URL = "https://ibb.co/mVx8P8rY"  # Use your actual image URL here
+OWNER_ID = 1894915577  # your Telegram user ID
+LOG_CHANNEL = -1001818424908  # Optional: set to your private log channel ID or leave None
