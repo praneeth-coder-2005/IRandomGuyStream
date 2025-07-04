@@ -15,17 +15,20 @@ from settings import (
 
 logging.basicConfig(level=logging.INFO)
 
-app = Client("auto_renamer_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+app = Client(
+    "auto_renamer_bot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN
+)
 
-
-# === UTILITIES ===
+# ===== Utilities =====
 
 def human_readable(size):
     for unit in ["B", "KB", "MB", "GB"]:
         if size < 1024:
             return f"{size:.2f} {unit}"
         size /= 1024
-
 
 async def progress_bar(current, total, message, stage):
     percent = current * 100 / total
@@ -35,7 +38,6 @@ async def progress_bar(current, total, message, stage):
         f"{human_readable(current)} of {human_readable(total)}"
     )
 
-
 def download_thumbnail(url: str) -> str:
     response = requests.get(url)
     filename = "temp_thumb.jpg"
@@ -43,51 +45,44 @@ def download_thumbnail(url: str) -> str:
         f.write(response.content)
     return filename
 
+# ===== Private Command Handlers =====
 
-# === COMMAND HANDLERS ===
-
-@app.on_message(filters.command("start") & filters.private)
-async def start_command(client, message):
+@app.on_message(filters.command("start") & filters.user(OWNER_ID))
+async def start_cmd(client, message):
     await message.reply_text("✅ Bot is alive and monitoring the source channel.")
 
-
-@app.on_message(filters.command("ping") & filters.private)
-async def ping_command(client, message):
+@app.on_message(filters.command("ping") & filters.user(OWNER_ID))
+async def ping_cmd(client, message):
     start = time.time()
     msg = await message.reply_text("🏓 Pinging...")
     end = time.time()
     await msg.edit(f"🏓 Pong: `{(end - start) * 1000:.2f} ms`")
 
-
-@app.on_message(filters.command("status") & filters.private)
-async def status_command(client, message):
+@app.on_message(filters.command("status") & filters.user(OWNER_ID))
+async def status_cmd(client, message):
     await message.reply_text(
-        f"**Bot Configuration:**\n"
-        f"📤 Prefix: `{CUSTOM_PREFIX}`\n"
-        f"📥 Source: `{SOURCE_CHANNEL}`\n"
-        f"📤 Destination: `{DEST_CHANNEL}`\n"
-        f"🖼 Thumbnail: `{THUMBNAIL_URL}`"
+        f"**Config:**\n"
+        f"Prefix: `{CUSTOM_PREFIX}`\n"
+        f"Source: `{SOURCE_CHANNEL}`\n"
+        f"Dest: `{DEST_CHANNEL}`\n"
+        f"Thumb URL: `{THUMBNAIL_URL}`"
     )
 
-
-@app.on_message(filters.command("help") & filters.private)
+@app.on_message(filters.command("help") & filters.user(OWNER_ID))
 async def help_cmd(client, message):
     await message.reply_text(
         "**Commands:**\n"
-        "/start - Check if bot is running\n"
-        "/ping - Latency\n"
-        "/status - Config info\n"
-        "/help - Show this menu"
+        "/start - Check status\n"
+        "/ping - Check ping\n"
+        "/status - Show config\n"
+        "/help - Show help"
     )
 
+@app.on_message(filters.user(OWNER_ID))
+async def fallback(client, message):
+    await message.reply_text("✅ I received your message.")
 
-# ✅ TEST CONNECTION: Replies to any private message
-@app.on_message(filters.private)
-async def test_dm(client, message):
-    await message.reply_text("👋 I see you! The bot is working.")
-
-
-# === CHANNEL FILE HANDLER ===
+# ===== Channel Media Processor =====
 
 @app.on_message(filters.channel & filters.chat(SOURCE_CHANNEL) & (filters.video | filters.document))
 async def handle_file(client: Client, message: Message):
@@ -119,12 +114,7 @@ async def handle_file(client: Client, message: Message):
             progress=progress_bar,
             progress_args=(progress_msg, "Uploading")
         )
-        log_text = (
-            f"✅ **File Processed**\n"
-            f"📄 Renamed: `{new_name}`\n"
-            f"📥 From: `{SOURCE_CHANNEL}`\n"
-            f"📤 To: `{DEST_CHANNEL}`"
-        )
+        log_text = f"✅ Uploaded: `{new_name}`"
     except Exception as e:
         log_text = f"❌ Upload failed: `{str(e)}`"
 
@@ -138,17 +128,16 @@ async def handle_file(client: Client, message: Message):
     except:
         pass
 
-
-# === CLEAN STARTUP ===
+# ===== Startup =====
 
 async def main():
     await app.start()
     try:
         await app.send_message(LOG_CHANNEL or OWNER_ID, "🚀 Bot Started and Monitoring Source Channel.")
     except Exception as e:
-        print(f"Startup log failed: {e}")
+        print(f"[Startup log failed]: {e}")
     print("✅ Bot is running.")
-    await asyncio.Event().wait()  # Keeps the bot alive forever
+    await asyncio.Event().wait()
 
 if __name__ == "__main__":
     asyncio.run(main())
