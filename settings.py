@@ -1,9 +1,9 @@
-API_ID = 123456  # your API ID
-API_HASH = "your_api_hash"
-BOT_TOKEN = "your_bot_token"
+API_ID = 22250562  # your API ID
+API_HASH = "07754d3bdc27193318ae5f6e6c8016af"
+BOT_TOKEN = "7792589949:AAEpN_UVJnegw99Bj3RjOvyd00W8CyO1-qQ"
 
-SOURCE_CHANNEL = -1001234567890
-DEST_CHANNEL = -1009876543210
+SOURCE_CHANNEL = -1001818424908
+DEST_CHANNEL = -1002843375474
 
-CUSTOM_PREFIX = "MyMedia_"
-THUMBNAIL_URL = "https://example.com/thumb.jpg"  # Use your actual image URL here
+CUSTOM_PREFIX = "IRandomGuy - "
+THUMBNAIL_URL = "https://ibb.co/mVx8P8rY"  # Use your actual image URL here
