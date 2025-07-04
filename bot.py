@@ -1,6 +1,3 @@
-@app.on_message(filters.private)
-async def test_dm(client, message):
-    await message.reply_text("👋 I see you!")
 import os
 import time
 import sys
@@ -17,10 +14,11 @@ from settings import (
 )
 
 logging.basicConfig(level=logging.INFO)
+
 app = Client("auto_renamer_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 
-# === UTILS ===
+# === UTILITIES ===
 
 def human_readable(size):
     for unit in ["B", "KB", "MB", "GB"]:
@@ -83,12 +81,13 @@ async def help_cmd(client, message):
     )
 
 
+# ✅ TEST CONNECTION: Replies to any private message
 @app.on_message(filters.private)
-async def fallback(client, message):
-    await message.reply_text("✅ Bot is online. Use /help to view commands.")
+async def test_dm(client, message):
+    await message.reply_text("👋 I see you! The bot is working.")
 
 
-# === MAIN FILE HANDLER ===
+# === CHANNEL FILE HANDLER ===
 
 @app.on_message(filters.channel & filters.chat(SOURCE_CHANNEL) & (filters.video | filters.document))
 async def handle_file(client: Client, message: Message):
@@ -149,8 +148,7 @@ async def main():
     except Exception as e:
         print(f"Startup log failed: {e}")
     print("✅ Bot is running.")
-    await asyncio.Event().wait()  # Keep bot alive forever
-
+    await asyncio.Event().wait()  # Keeps the bot alive forever
 
 if __name__ == "__main__":
     asyncio.run(main())
