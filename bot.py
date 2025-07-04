@@ -1,3 +1,6 @@
+@app.on_message(filters.private)
+async def test_dm(client, message):
+    await message.reply_text("👋 I see you!")
 import os
 import time
 import sys
