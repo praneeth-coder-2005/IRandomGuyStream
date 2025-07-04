@@ -123,7 +123,7 @@ async def restart_command(client, message):
     await message.reply_text("♻️ Restarting bot...")
     os.execv(__file__, ['python3'] + sys.argv)
 
-from pyrogram.idle import idle
+from pyrogram import idle
 
 async def notify_startup():
     try:
