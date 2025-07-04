@@ -123,12 +123,21 @@ async def restart_command(client, message):
     await message.reply_text("♻️ Restarting bot...")
     os.execv(__file__, ['python3'] + sys.argv)
 
-@app.on_idle()
-async def on_startup():
+from pyrogram.idle import idle
+
+async def notify_startup():
     try:
         msg = "🚀 **Bot Started and Monitoring**"
         await app.send_message(LOG_CHANNEL or OWNER_ID, msg)
     except Exception as e:
         print(f"Startup message failed: {e}")
 
-app.run()
+async def main():
+    await app.start()
+    await notify_startup()
+    await idle()
+    await app.stop()
+
+import asyncio
+if __name__ == "__main__":
+    asyncio.run(main())
